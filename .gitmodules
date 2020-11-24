@@ -1,0 +1,3 @@
+[submodule "lib/nighres"]
+	path = lib/nighres
+	url = https://github.com/nighres/nighres.git

@@ -1,0 +1,5 @@
+nilearn
+matplotlib
+pytest
+notebook
+pybids
