@@ -41,6 +41,27 @@ cd lib/nighres
 python3 -m pip install .
 ```
 
+### Docker
+
+```
+docker run --rm \
+-v /home/remi/gin/V5_high-res/pilot_1:/data \
+-p 8888:8888 nighres
+```
+
+Running this might require to kill some process (java) that uses the 8888 port.
+
+```
+docker rm -fv $(docker ps -aq)  # Remove all containers
+sudo lsof -i -P -n | grep <port number>  # List who's using the port
+sudo kill <process id> 
+```
+
+https://stackoverflow.com/questions/37971961/docker-error-bind-address-already-in-use
+
+
+Launching the jupyter book in the browser http://localhost:8888/
+
 ## Data structure
 
 Assumes a BIDS.
