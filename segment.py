@@ -73,6 +73,8 @@ def segment(layout_in, layout_out, this_participant):
             output_dir=output_dir,
         )
 
+        # use pybids CONFIG to help generate pybids filenames
+        # rename output to be BIDS derivatives compliant
         brain_mask = (
             skullstrip_output["brain_mask"]
             .replace("-_", "-")
@@ -85,3 +87,9 @@ def segment(layout_in, layout_out, this_participant):
                 skullstrip_output[output].replace("-_", "-").replace("strip-", "strip_")
             )
             move_file(skullstrip_output[output], new_output)
+
+        # TODO generate JSON for derivatives
+        # import json
+        # data = {'field1': 'value1', 'field2': 3, 'field3': 'field3'}
+        # with open('my_output_file.json', 'w') as ff:
+        #     json.dump(data, ff)
