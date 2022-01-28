@@ -5,7 +5,7 @@
 % )
 % t1w = os.path.join(subj_dir, "sub-pilot001_ses-001_acq-" + res + "_UNIT1.nii")
 % t1map = os.path.join(subj_dir, "sub-pilot001_ses-001_acq-" + res + "_T1map.nii")
-% 
+%
 % names{1} = 'sub-pilot001_ses-001_acq-%s_part-mag_inv-2_MP2RAGE';
 % names{2} = 'sub-pilot001_ses-001_acq-%s_UNIT1';
 

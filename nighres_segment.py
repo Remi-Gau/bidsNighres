@@ -1,5 +1,6 @@
-import nighres
 import os
+
+import nighres
 from nilearn import plotting
 
 input_dir = "/home/remi/gin/V5_high-res/pilot_1/derivatives/nighres"
