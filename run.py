@@ -7,11 +7,10 @@ from os.path import join
 from os.path import realpath
 
 import click
-import nighres
 from rich import print
 
+from segment import segment
 from utils import get_dataset_layout
-from utils import move_file
 
 __version__ = open(join(dirname(realpath(__file__)), "version")).read()
 
@@ -90,11 +89,9 @@ def main(input_datasets, output_location, analysis_level, participant_label, act
 
     if action == "skullstrip":
 
-        layout = get_dataset_layout(input_datasets)
+        layout_in = get_dataset_layout(input_datasets)
 
-        output_layout = get_dataset_layout(output_location)
-
-        print(f"Processing: {participant_label}")
+        layout_out = get_dataset_layout(output_location)
 
         # print(layout.get_subjects())
 
@@ -102,77 +99,7 @@ def main(input_datasets, output_location, analysis_level, participant_label, act
 
         # TODO add loop for subjects
 
-        unit1_files = layout.get(
-            subject=participant_label,
-            suffix="UNIT1",
-            extension="nii",
-            regex_search=True,
-        )
-
-        sub_entity = "sub-" + participant_label
-        ses_entity = "ses-" + "001"
-
-        for bf in unit1_files:
-
-            entities = bf.get_entities()
-
-            entities["acquisition"] = "lores"
-
-            output_dir = join(output_location, sub_entity, ses_entity, "anat")
-
-            t1w = layout.get(
-                return_type="filename",
-                subject=participant_label,
-                acquisition=entities["acquisition"],
-                suffix="UNIT1",
-                extension="nii",
-                regex_search=True,
-            )
-            print(t1w)
-
-            inv2 = layout.get(
-                return_type="filename",
-                subject=participant_label,
-                inv=2,
-                acquisition=entities["acquisition"],
-                suffix="MP2RAGE",
-                extension="nii",
-                regex_search=True,
-            )
-            print(inv2)
-
-            t1map = layout.get(
-                return_type="filename",
-                subject=participant_label,
-                suffix="T1map",
-                extension="nii",
-                regex_search=True,
-            )
-            print(t1map)
-
-            skullstrip_output = nighres.brain.mp2rage_skullstripping(
-                second_inversion=inv2[0],
-                t1_weighted=t1w[0],
-                t1_map=t1map[0],
-                save_data=True,
-                file_name=sub_entity + "_" + ses_entity + "_desc-",
-                output_dir=output_dir,
-            )
-
-            brain_mask = (
-                skullstrip_output["brain_mask"]
-                .replace("-_", "-")
-                .replace("strip-", "brain_")
-            )
-            move_file(skullstrip_output["brain_mask"], brain_mask)
-
-            for output in ["t1w_masked", "inv2_masked", "t1map_masked"]:
-                new_output = (
-                    skullstrip_output[output]
-                    .replace("-_", "-")
-                    .replace("strip-", "strip_")
-                )
-                move_file(skullstrip_output[output], new_output)
+        segment(layout_in, layout_out, participant_label)
 
 
 # parser.add_argument('-v', '--version', action='version',

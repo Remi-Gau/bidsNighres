@@ -3,7 +3,6 @@ from os.path import join
 import nighres
 from rich import print
 
-from utils import get_dataset_layout
 from utils import move_file
 
 
