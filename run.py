@@ -1,19 +1,19 @@
 #!/usr/bin/env python3
 import os
 import subprocess
-from glob import glob
-from html import entities
+from os.path import abspath
+from os.path import dirname
+from os.path import join
+from os.path import realpath
 
 import click
-import nibabel
-import numpy
-from bids import BIDSLayout
-from matplotlib.pyplot import table
+import nighres
 from rich import print
 
-__version__ = open(
-    os.path.join(os.path.dirname(os.path.realpath(__file__)), "version")
-).read()
+from utils import get_dataset_layout
+from utils import move_file
+
+__version__ = open(join(dirname(realpath(__file__)), "version")).read()
 
 
 def run(command, env={}):
@@ -77,97 +77,106 @@ def run(command, env={}):
     help="""
             What to do
             """,
-    type=click.Choice(["genT1map", "skullstripping", "segment"], case_sensitive=False),
+    type=click.Choice(["genT1map", "skullstrip", "segment"], case_sensitive=False),
 )
 def main(input_datasets, output_location, analysis_level, participant_label, action):
 
-    input_datasets = os.path.abspath(input_datasets)
-    output_location = os.path.abspath(output_location)
+    input_datasets = abspath(input_datasets)
+    output_location = abspath(output_location)
 
-    print(input_datasets)
-    print(output_location)
-    print(analysis_level)
-    print(participant_label)
+    print(f"Input dataset: {input_datasets}")
 
-    layout = BIDSLayout(input_datasets)
+    print(f"Output location: {output_location}")
 
-    print(layout.get_subjects())
-    print(layout.get_sessions())
-    unit1_files = layout.get(
-        subject=participant_label,
-        suffix="UNIT1",
-        extension="nii",
-        regex_search=True,
-    )
+    if action == "skullstrip":
 
-    for t1 in unit1_files:
+        layout = get_dataset_layout(input_datasets)
 
-        entities = t1.get_entities()
-        print(entities)
-        print(t1.filename)
+        output_layout = get_dataset_layout(output_location)
 
-        inv2 = layout.get(
-            return_type="filename",
+        print(f"Processing: {participant_label}")
+
+        # print(layout.get_subjects())
+
+        # print(layout.get_sessions())
+
+        # TODO add loop for subjects
+
+        unit1_files = layout.get(
             subject=participant_label,
-            inv=2,
-            acquisition=entities["acquisition"],
-            suffix="MP2RAGE",
+            suffix="UNIT1",
             extension="nii",
             regex_search=True,
         )
-        print(inv2)
 
-        t1map = layout.get(
-            return_type="filename",
-            subject=participant_label,
-            acquisition=entities["acquisition"],
-            suffix="T1map",
-            extension="nii",
-            regex_search=True,
-        )
-        print(t1map)
+        sub_entity = "sub-" + participant_label
+        ses_entity = "ses-" + "001"
+
+        for bf in unit1_files:
+
+            entities = bf.get_entities()
+
+            entities["acquisition"] = "lores"
+
+            output_dir = join(output_location, sub_entity, ses_entity, "anat")
+
+            t1w = layout.get(
+                return_type="filename",
+                subject=participant_label,
+                acquisition=entities["acquisition"],
+                suffix="UNIT1",
+                extension="nii",
+                regex_search=True,
+            )
+            print(t1w)
+
+            inv2 = layout.get(
+                return_type="filename",
+                subject=participant_label,
+                inv=2,
+                acquisition=entities["acquisition"],
+                suffix="MP2RAGE",
+                extension="nii",
+                regex_search=True,
+            )
+            print(inv2)
+
+            t1map = layout.get(
+                return_type="filename",
+                subject=participant_label,
+                suffix="T1map",
+                extension="nii",
+                regex_search=True,
+            )
+            print(t1map)
+
+            skullstrip_output = nighres.brain.mp2rage_skullstripping(
+                second_inversion=inv2[0],
+                t1_weighted=t1w[0],
+                t1_map=t1map[0],
+                save_data=True,
+                file_name=sub_entity + "_" + ses_entity + "_desc-",
+                output_dir=output_dir,
+            )
+
+            brain_mask = (
+                skullstrip_output["brain_mask"]
+                .replace("-_", "-")
+                .replace("strip-", "brain_")
+            )
+            move_file(skullstrip_output["brain_mask"], brain_mask)
+
+            for output in ["t1w_masked", "inv2_masked", "t1map_masked"]:
+                new_output = (
+                    skullstrip_output[output]
+                    .replace("-_", "-")
+                    .replace("strip-", "strip_")
+                )
+                move_file(skullstrip_output[output], new_output)
 
 
 # parser.add_argument('-v', '--version', action='version',
 #                     version='bidsNighRes {}'.format(__version__))
-
-# subjects_to_analyze = []
-# # only for a subset of subjects
-# if args.participant_label:
-#     subjects_to_analyze = args.participant_label
-# # for all subjects
-# else:
-#     subject_dirs = glob(os.path.join(args.bids_dir, "sub-*"))
-#     subjects_to_analyze = [subject_dir.split("-")[-1] for subject_dir in subject_dirs]
-
-# # running participant level
-# if args.analysis_level == "participant":
-
-#     # find all T1s and skullstrip them
-#     for subject_label in subjects_to_analyze:
-#         for T1_file in glob(os.path.join(args.bids_dir, "sub-%s"%subject_label,
-#                                          "anat", "*_T1w.nii*")) + glob(os.path.join(args.bids_dir,"sub-%s"%subject_label,"ses-*","anat", "*_T1w.nii*")):
-#             out_file = os.path.split(T1_file)[-1].replace("_T1w.", "_brain.")
-#             cmd = "bet %s %s"%(T1_file, os.path.join(args.output_dir, out_file))
-#             print(cmd)
-#             run(cmd)
-
-# # running group level
-# elif args.analysis_level == "group":
-#     brain_sizes = []
-#     for subject_label in subjects_to_analyze:
-#         for brain_file in glob(os.path.join(args.output_dir, "sub-%s*.nii*"%subject_label)):
-#             data = nibabel.load(brain_file).get_data()
-#             # calcualte average mask size in voxels
-#             brain_sizes.append((data != 0).sum())
-
-#     with open(os.path.join(args.output_dir, "avg_brain_size.txt"), 'w') as fp:
-#         fp.write("Average brain size is %g voxels"%numpy.array(brain_sizes).mean())
-
-
-def return_regex(string):
-    return f"^{string}$"
-
 
 if __name__ == "__main__":
     main()

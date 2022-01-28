@@ -1,8 +1,16 @@
-# CRC nighres
+- [bidsNighres](#bidsnighres)
+    - [Installation](#installation)
+        - [Install Nighres](#install-nighres)
+            - [Set up java](#set-up-java)
+            - [Install java](#install-java)
+    - [Running the app](#running-the-app)
 
-For processing of high-res images from the
-[CRC](https://www.campus.uliege.be/cms/c_1841124/fr/b30-centre-de-recherches-du-cyclotron-crc)
-using [nighres](https://nighres.readthedocs.io/en/latest/).
+# bidsNighres
+
+BIDS app to help preprocessing high-res anatomical data using
+[nighres](https://nighres.readthedocs.io/en/latest/).
+
+<!-- TODO seems hard to install JDK, nighres in virtual environment
 
 ### virtualenv
 
@@ -12,6 +20,7 @@ $ virtualenv --python=python3 crc_nighres
 # activate the new environment
 $ source crc_nighres/bin/activate
 ```
+-->
 
 ## Installation
 
@@ -26,11 +35,15 @@ git submodule add https://github.com/nighres/nighres.git
 
 See [here](https://nighres.readthedocs.io/en/latest/installation.html).
 
+Summary below!
+
 #### Set up java
 
 ```bash
 sudo apt-get install openjdk-8-jdk
 export JCC_JDK=/usr/lib/jvm/java-8-openjdk-amd64
+
+# this may fail when in a virtual environment
 python3 -m pip install jcc
 ```
 
@@ -42,6 +55,7 @@ cd lib/nighres
 python3 -m pip install .
 ```
 
+<!--
 ### Docker
 
 ```
@@ -59,8 +73,9 @@ sudo kill <process id>
 ```
 
 https://stackoverflow.com/questions/37971961/docker-error-bind-address-already-in-use
+-->
 
-# Running it
+## Running the app
 
 ```bash
 
@@ -74,5 +89,6 @@ echo ${input_dataset}
 python run.py --input-datasets ${input_dataset} \
               --output-location ${output_location} \
               --analysis-level participant \
-              --participant-label pilot001
+              --participant-label pilot001 \
+              --action skullstrip
 ```

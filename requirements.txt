@@ -1,7 +1,5 @@
-nilearn
-matplotlib
 pytest
-notebook
 pybids
 black
 rich
+sourcery
