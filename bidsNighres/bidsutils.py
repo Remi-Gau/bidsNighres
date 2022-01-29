@@ -18,10 +18,9 @@ def get_dataset_layout(dataset_path: str, config={}):
     if config == {}:
         pybids_config = get_pybids_config()
 
-    layout = BIDSLayout(
+    return BIDSLayout(
         dataset_path, validate=False, derivatives=False, config=pybids_config
     )
-    return layout
 
 
 def write_dataset_description(layout):
