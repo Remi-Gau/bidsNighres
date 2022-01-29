@@ -94,5 +94,5 @@ python run.py --input-datasets ${input_dataset} \
               --participant-label pilot001 \
               --action segment \
               --bids-filter-file ${filter_file} \
-              --dry-run True
+              --dry-run False
 ```
