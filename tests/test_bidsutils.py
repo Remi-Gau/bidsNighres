@@ -137,5 +137,5 @@ def test_parse_desc():
         "subject": "01",
         "extension": ".nii",
         "session": "01",
-        "suffix": "T1map",
+        "suffix": "MP2RAGE",
     }
