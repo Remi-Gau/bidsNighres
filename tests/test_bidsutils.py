@@ -130,6 +130,7 @@ def test_parse_desc():
     T1map = [
         "bidsNighres/sub-01/ses-01/anat/sub-01_ses-01_inv-2_part-mag_desc-skullstripped_MP2RAGE.nii.gz"
     ]
+
     input_location = Path.joinpath(Path().resolve(), "derivatives")
     layout_in = get_dataset_layout(input_location)
     entities = layout_in.parse_file_entities(T1map[0])
@@ -140,6 +141,6 @@ def test_parse_desc():
         "part": "mag",
         "extension": ".nii.gz",
         "session": "01",
-        "desc": "skullstripped",
+        "description": "skullstripped",
         "suffix": "MP2RAGE",
     }
