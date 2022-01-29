@@ -6,11 +6,12 @@ from pathlib import Path
 from rich import print
 
 
-def move_file(input: str, output: str):
+def move_file(input: str, output: str, dry_run=False):
 
     print(f"{abspath(input)} --> {abspath(output)}")
-    create_dir_for_file(output)
-    os.rename(input, output)
+    if not dry_run:
+        create_dir_for_file(output)
+        os.rename(input, output)
 
 
 def return_regex(string):

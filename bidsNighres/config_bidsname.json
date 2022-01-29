@@ -1,3 +1,4 @@
 {
-    "mask": "sub-{subject}[/ses-{session}]/anat/sub-{subject}[_ses-{session}][_acq-{acquisition}][_ce-{ceagent}][_rec-{reconstruction}][_part-{part}]_desc-brain_mask{extension<.nii|.nii.gz|.json>|.nii.gz}"
+    "mask": "sub-{subject}[/ses-{session}]/anat/sub-{subject}[_ses-{session}][_acq-{acquisition}][_ce-{ceagent}][_rec-{reconstruction}][_inv-{inv}][_part-{part}]_desc-brain_mask{extension<.nii|.nii.gz|.json>|.nii.gz}",
+    "skullstripped": "sub-{subject}[/ses-{session}]/anat/sub-{subject}[_ses-{session}][_acq-{acquisition}][_ce-{ceagent}][_rec-{reconstruction}][_inv-{inv}][_part-{part}]_desc-skullstripped_{suffix}{extension<.nii|.nii.gz|.json>|.nii.gz}"
 }

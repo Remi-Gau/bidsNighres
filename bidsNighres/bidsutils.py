@@ -5,8 +5,10 @@ from os.path import join
 from pathlib import Path
 
 from bids import BIDSLayout
+from rich import print
 
 from .utils import create_dir_if_absent
+from .utils import move_file
 
 
 def get_dataset_layout(dataset_path: str):
@@ -105,9 +107,36 @@ def get_config(config_file="", default="") -> dict:
         return json.load(ff)
 
 
-def create_bidsname(layout, filename: str, filetype: str) -> str:
+def bidsify_skullstrip_output(
+    skullstrip_output, layout_in, layout_out, UNIT1, inv2, T1map, dry_run=True
+):
 
-    entities = layout.parse_file_entities(filename)
+    entities = layout_in.parse_file_entities(UNIT1)
+    entities["extension"] = ".nii.gz"
+    brain_mask = create_bidsname(layout_out, entities, filetype="mask")
+    move_file(skullstrip_output["brain_mask"], brain_mask, dry_run=dry_run)
+    skullstrip_output["brain_mask"] = brain_mask
+
+    outputs = ["inv2_masked", "t1w_masked", "t1map_masked"]
+    inputs = [inv2, UNIT1, T1map]
+
+    for i, o in zip(inputs, outputs):
+        entities = layout_in.parse_file_entities(i)
+        entities["extension"] = ".nii.gz"
+        new_output = create_bidsname(layout_out, entities, filetype="skullstripped")
+        move_file(skullstrip_output[o], new_output, dry_run=dry_run)
+        skullstrip_output[o] = new_output
+
+    return skullstrip_output
+
+
+def create_bidsname(layout, filename, filetype: str) -> str:
+    # filename is path or entities dict
+
+    if isinstance(filename, str):
+        entities = layout.parse_file_entities(filename)
+    else:
+        entities = filename
 
     bids_name_config = get_bidsname_config()
     output_file = layout.build_path(
@@ -120,10 +149,6 @@ def create_bidsname(layout, filename: str, filetype: str) -> str:
 
 
 def check_layout(layout):
-
-    desc = layout.get_dataset_description()
-    if desc["DatasetType"] != "derivative":
-        raise Exception("Input dataset should be BIDS derivative")
 
     bf = layout.get(
         return_type="filename",
