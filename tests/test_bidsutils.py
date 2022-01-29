@@ -128,14 +128,18 @@ def test_parse_T1map():
 def test_parse_desc():
 
     T1map = [
-        "bidsNighres/sub-pilot01/ses-01/anat/sub-01_ses-01_inv-2_part-mag_desc-skullstripped_MP2RAGE.nii.gz"
+        "bidsNighres/sub-01/ses-01/anat/sub-01_ses-01_inv-2_part-mag_desc-skullstripped_MP2RAGE.nii.gz"
     ]
     input_location = Path.joinpath(Path().resolve(), "derivatives")
     layout_in = get_dataset_layout(input_location)
     entities = layout_in.parse_file_entities(T1map[0])
     assert entities == {
         "subject": "01",
-        "extension": ".nii",
+        "datatype": "anat",
+        "inv": "2",
+        "part": "mag",
+        "extension": ".nii.gz",
         "session": "01",
+        "desc": "skullstripped",
         "suffix": "MP2RAGE",
     }
