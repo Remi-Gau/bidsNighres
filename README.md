@@ -84,11 +84,14 @@ root_dataset=${PWD}/../../..
 input_dataset=${root_dataset}/inputs/raw/
 output_location=${root_dataset}/derivatives/bidsNighres/
 
+filter_file=${root_dataset}/code/filter_file.json
+
 echo ${input_dataset}
 
 python run.py --input-datasets ${input_dataset} \
               --output-location ${output_location} \
               --analysis-level participant \
               --participant-label pilot001 \
-              --action skullstrip
+              --action skullstrip \
+              --bids-filter-file ${filter_file}
 ```

@@ -6,7 +6,7 @@ from rich import print
 from bidsNighres.bidsutils import bidsify_skullstrip_output
 
 
-def skullstrip(layout_in, layout_out, this_participant):
+def skullstrip(layout_in, layout_out, this_participant, bids_filter: dict):
 
     print(f"Processing: {this_participant}")
 
@@ -14,13 +14,11 @@ def skullstrip(layout_in, layout_out, this_participant):
 
     # print(layout_in.get_sessions())
 
-    # TODO add loop for subjects
-
     unit1_files = layout_in.get(
         subject=this_participant,
-        suffix="UNIT1",
         extension="nii",
         regex_search=True,
+        **bids_filter["UNIT1"],
     )
 
     sub_entity = "sub-" + this_participant
@@ -38,30 +36,27 @@ def skullstrip(layout_in, layout_out, this_participant):
         UNIT1 = layout_in.get(
             return_type="filename",
             subject=this_participant,
-            acquisition=entities["acquisition"],
-            suffix="UNIT1",
             extension="nii",
             regex_search=True,
+            **bids_filter["UNIT1"],
         )
         print(UNIT1)
 
         inv2 = layout_in.get(
             return_type="filename",
             subject=this_participant,
-            inv=2,
-            acquisition=entities["acquisition"],
-            suffix="MP2RAGE",
             extension="nii",
             regex_search=True,
+            **bids_filter["inv2"],
         )
         print(inv2)
 
         T1map = layout_in.get(
             return_type="filename",
             subject=this_participant,
-            suffix="T1map",
             extension="nii",
             regex_search=True,
+            **bids_filter["T1map"],
         )
         print(T1map)
 
@@ -89,3 +84,13 @@ def skullstrip(layout_in, layout_out, this_participant):
         # data = {'field1': 'value1', 'field2': 3, 'field3': 'field3'}
         # with open('my_output_file.json', 'w') as ff:
         #     json.dump(data, ff)
+
+    # mgdm_results = nighres.brain.mgdm_segmentation(
+    #     contrast_image1=skullstripping_results["t1w_masked"],
+    #     contrast_type1="Mp2rage7T",
+    #     contrast_image2=skullstripping_results["t1map_masked"],
+    #     contrast_type2="T1map7T",
+    #     save_data=True,
+    #     file_name="sub-pilot001_ses-001_acq-" + up + res,
+    #     output_dir=os.path.join(subj_dir, up + res),
+    # )

@@ -95,6 +95,11 @@ def get_pybids_config(config_file="") -> dict:
     return get_config(config_file, default)
 
 
+def get_bids_filter_config(config_file="") -> dict:
+    default = "default_filter_file.json"
+    return get_config(config_file, default)
+
+
 def get_config(config_file="", default="") -> dict:
 
     if config_file == "" or not Path(config_file).exists():

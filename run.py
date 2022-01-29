@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import json
 import os
 import subprocess
 from os.path import abspath
@@ -10,6 +11,7 @@ import click
 from rich import print
 
 from bidsNighres.bidsutils import check_layout
+from bidsNighres.bidsutils import get_bids_filter_config
 from bidsNighres.bidsutils import get_dataset_layout
 from bidsNighres.bidsutils import init_derivatives_layout
 from bidsNighres.segment import skullstrip
@@ -44,6 +46,7 @@ def run(command, env={}):
             The directory with the input dataset formatted according to the BIDS standard.
             """,
     type=click.Path(exists=True, dir_okay=True),
+    required=True,
 )
 @click.option(
     "--output-location",
@@ -53,6 +56,7 @@ def run(command, env={}):
             with the results of the participant level analysis.
             """,
     type=click.Path(exists=False, dir_okay=True),
+    required=True,
 )
 @click.option(
     "--analysis-level",
@@ -62,6 +66,7 @@ def run(command, env={}):
             (in parallel) using the same output-location.
             """,
     type=click.Choice(["participant", "group"], case_sensitive=True),
+    required=True,
 )
 @click.option(
     "--participant-label",
@@ -72,15 +77,34 @@ def run(command, env={}):
             provided all subjects should be analyzed. Multiple
             participants can be specified with a space separated list.
             """,  # nargs ?
+    required=True,
 )
+# TODO: implement having a list of participants
+# https://stackoverflow.com/questions/48391777/nargs-equivalent-for-options-in-click
 @click.option(
     "--action",
     help="""
             What to do
             """,
     type=click.Choice(["genT1map", "skullstrip", "segment"], case_sensitive=False),
+    required=True,
 )
-def main(input_datasets, output_location, analysis_level, participant_label, action):
+@click.option(
+    "--bids-filter-file",
+    help="""
+            Path to a JSON file to filter input file
+            """,
+    default="",
+    show_default=True,
+)
+def main(
+    input_datasets,
+    output_location,
+    analysis_level,
+    participant_label,
+    action,
+    bids_filter_file,
+):
 
     input_datasets = abspath(input_datasets)
     print(f"Input dataset: {input_datasets}")
@@ -91,6 +115,11 @@ def main(input_datasets, output_location, analysis_level, participant_label, act
     print(f"Output location: {output_location}")
     layout_out = init_derivatives_layout(output_location)
 
+    if bids_filter_file == "":
+        bids_filter = get_bids_filter_config()
+    else:
+        bids_filter = get_bids_filter_config(bids_filter_file)
+
     if action == "skullstrip":
 
         # print(layout.get_subjects())
@@ -99,7 +128,7 @@ def main(input_datasets, output_location, analysis_level, participant_label, act
 
         # TODO add loop for subjects
 
-        skullstrip(layout_in, layout_out, participant_label)
+        skullstrip(layout_in, layout_out, participant_label, bids_filter)
 
 
 # parser.add_argument('-v', '--version', action='version',
