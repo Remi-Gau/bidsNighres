@@ -87,7 +87,7 @@ def skullstrip(layout_in, layout_out, this_participant, bids_filter: dict):
         #     json.dump(data, ff)
 
 
-def segment(layout_out, this_participant, bids_filter: dict):
+def segment(layout_out, this_participant, bids_filter: dict, dry_run: False):
 
     print(f"Processing: {this_participant}")
 
@@ -99,27 +99,30 @@ def segment(layout_out, this_participant, bids_filter: dict):
     skullstripped_UNIT1 = layout_out.get(
         return_type="filename",
         subject=this_participant,
-        desc=["skullstripped"],
+        description=["skullstripped"],
         suffix=bids_filter["UNIT1"]["suffix"],
         regex_search=True,
+        invalid_filters="allow",
     )
     print(skullstripped_UNIT1)
 
     skullstripped_T1map = layout_out.get(
         return_type="filename",
         subject=this_participant,
-        desc=["skullstripped"],
+        description=["skullstripped"],
         suffix=bids_filter["T1map"]["suffix"],
         regex_search=True,
+        invalid_filters="allow",
     )
     print(skullstripped_T1map)
 
-    mgdm_output = nighres.brain.mgdm_segmentation(
-        contrast_image1=skullstripped_T1map[0],
-        contrast_type1="Mp2rage7T",
-        contrast_image2=skullstripped_UNIT1[0],
-        contrast_type2="T1map7T",
-        save_data=True,
-        file_name=sub_entity + "_" + ses_entity,
-        output_dir=output_dir,
-    )
+    if not dry_run:
+        mgdm_output = nighres.brain.mgdm_segmentation(
+            contrast_image1=skullstripped_T1map[0],
+            contrast_type1="Mp2rage7T",
+            contrast_image2=skullstripped_UNIT1[0],
+            contrast_type2="T1map7T",
+            save_data=True,
+            file_name=sub_entity + "_" + ses_entity,
+            output_dir=output_dir,
+        )

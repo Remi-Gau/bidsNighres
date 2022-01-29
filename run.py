@@ -14,6 +14,7 @@ from bidsNighres.bidsutils import check_layout
 from bidsNighres.bidsutils import get_bids_filter_config
 from bidsNighres.bidsutils import get_dataset_layout
 from bidsNighres.bidsutils import init_derivatives_layout
+from bidsNighres.segment import segment
 from bidsNighres.segment import skullstrip
 
 __version__ = open(join(dirname(realpath(__file__)), "version")).read()
@@ -65,7 +66,8 @@ def run(command, env={}):
             Multiple participant level analyses can be run independently
             (in parallel) using the same output-location.
             """,
-    type=click.Choice(["participant", "group"], case_sensitive=True),
+    default="subject",
+    type=click.Choice(["subject", "group"], case_sensitive=True),
     required=True,
 )
 @click.option(
@@ -97,6 +99,14 @@ def run(command, env={}):
     default="",
     show_default=True,
 )
+@click.option(
+    "--dry-run",
+    help="""
+
+            """,
+    default=False,
+    show_default=True,
+)
 def main(
     input_datasets,
     output_location,
@@ -104,16 +114,14 @@ def main(
     participant_label,
     action,
     bids_filter_file,
+    dry_run,
 ):
 
     input_datasets = abspath(input_datasets)
     print(f"Input dataset: {input_datasets}")
-    layout_in = get_dataset_layout(input_datasets)
-    check_layout(layout_in)
 
     output_location = abspath(output_location)
     print(f"Output location: {output_location}")
-    layout_out = init_derivatives_layout(output_location)
 
     if bids_filter_file == "":
         bids_filter = get_bids_filter_config()
@@ -122,13 +130,24 @@ def main(
 
     if action == "skullstrip":
 
+        layout_in = get_dataset_layout(input_datasets)
+        check_layout(layout_in)
+
+        layout_out = init_derivatives_layout(output_location)
+
         # print(layout.get_subjects())
 
         # print(layout.get_sessions())
 
         # TODO add loop for subjects
 
-        skullstrip(layout_in, layout_out, participant_label, bids_filter)
+        skullstrip(layout_in, layout_out, participant_label, bids_filter=bids_filter)
+
+    elif action == "segment":
+
+        layout_out = get_dataset_layout(output_location)
+
+        segment(layout_out, participant_label, bids_filter=bids_filter, dry_run=dry_run)
 
 
 # parser.add_argument('-v', '--version', action='version',

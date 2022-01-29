@@ -92,6 +92,7 @@ python run.py --input-datasets ${input_dataset} \
               --output-location ${output_location} \
               --analysis-level participant \
               --participant-label pilot001 \
-              --action skullstrip \
-              --bids-filter-file ${filter_file}
+              --action segment \
+              --bids-filter-file ${filter_file} \
+              --dry-run False
 ```
