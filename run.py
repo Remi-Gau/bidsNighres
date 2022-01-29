@@ -9,8 +9,10 @@ from os.path import realpath
 import click
 from rich import print
 
-from segment import segment
-from utils import get_dataset_layout
+from bidsNighres.bidsutils import check_layout
+from bidsNighres.bidsutils import get_dataset_layout
+from bidsNighres.bidsutils import init_derivatives_layout
+from bidsNighres.segment import skullstrip
 
 __version__ = open(join(dirname(realpath(__file__)), "version")).read()
 
@@ -81,17 +83,15 @@ def run(command, env={}):
 def main(input_datasets, output_location, analysis_level, participant_label, action):
 
     input_datasets = abspath(input_datasets)
-    output_location = abspath(output_location)
-
     print(f"Input dataset: {input_datasets}")
+    layout_in = get_dataset_layout(input_datasets)
+    check_layout(layout_in)
 
+    output_location = abspath(output_location)
     print(f"Output location: {output_location}")
+    layout_out = init_derivatives_layout(output_location)
 
     if action == "skullstrip":
-
-        layout_in = get_dataset_layout(input_datasets)
-
-        layout_out = get_dataset_layout(output_location)
 
         # print(layout.get_subjects())
 
@@ -99,7 +99,7 @@ def main(input_datasets, output_location, analysis_level, participant_label, act
 
         # TODO add loop for subjects
 
-        segment(layout_in, layout_out, participant_label)
+        skullstrip(layout_in, layout_out, participant_label)
 
 
 # parser.add_argument('-v', '--version', action='version',

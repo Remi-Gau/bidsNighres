@@ -3,10 +3,10 @@ from os.path import join
 import nighres
 from rich import print
 
-from utils import move_file
+from bidsNighres.utils import move_file
 
 
-def segment(layout_in, layout_out, this_participant):
+def skullstrip(layout_in, layout_out, this_participant):
 
     print(f"Processing: {this_participant}")
 
