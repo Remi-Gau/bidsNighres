@@ -1,8 +1,16 @@
-# CRC nighres
+- [bidsNighres](#bidsnighres)
+    - [Installation](#installation)
+        - [Install Nighres](#install-nighres)
+            - [Set up java](#set-up-java)
+            - [Install java](#install-java)
+    - [Running the app](#running-the-app)
 
-For processing of high-res images from the 
-[CRC](https://www.campus.uliege.be/cms/c_1841124/fr/b30-centre-de-recherches-du-cyclotron-crc) 
-using [nighres](https://nighres.readthedocs.io/en/latest/).
+# bidsNighres
+
+BIDS app to help preprocessing high-res anatomical data using
+[nighres](https://nighres.readthedocs.io/en/latest/).
+
+<!-- TODO seems hard to install JDK, nighres in virtual environment
 
 ### virtualenv
 
@@ -12,6 +20,7 @@ $ virtualenv --python=python3 crc_nighres
 # activate the new environment
 $ source crc_nighres/bin/activate
 ```
+-->
 
 ## Installation
 
@@ -26,13 +35,18 @@ git submodule add https://github.com/nighres/nighres.git
 
 See [here](https://nighres.readthedocs.io/en/latest/installation.html).
 
+Summary below!
+
 #### Set up java
 
 ```bash
 sudo apt-get install openjdk-8-jdk
 export JCC_JDK=/usr/lib/jvm/java-8-openjdk-amd64
+
+# this may fail when in a virtual environment
 python3 -m pip install jcc
 ```
+
 #### Install java
 
 ```bash
@@ -41,17 +55,43 @@ cd lib/nighres
 python3 -m pip install .
 ```
 
-## Data structure
+<!--
+### Docker
 
-Assumes a BIDS.
+```
+docker run --rm \
+-v /home/remi/gin/V5_high-res/pilot_1:/data \
+-p 8888:8888 nighres
+```
 
-More specifically the one described by the BEP-001 of BIDS
+Running this might require to kill some process (java) that uses the 8888 port.
 
-- https://bep001.readthedocs.io/en/master/
+```
+docker rm -fv $(docker ps -aq)  # Remove all containers
+sudo lsof -i -P -n | grep <port number>  # List who's using the port
+sudo kill <process id>
+```
 
-- https://github.com/bids-bep001/bids-specification.
+https://stackoverflow.com/questions/37971961/docker-error-bind-address-already-in-use
+-->
 
-- https://osf.io/k4bs5/
+## Running the app
 
-It is currently a work in progress but by far the best option at the moment 
-for MP2RAGE data management.
+```bash
+
+root_dataset=${PWD}/../../..
+
+input_dataset=${root_dataset}/inputs/raw/
+output_location=${root_dataset}/derivatives/bidsNighres/
+
+filter_file=${root_dataset}/code/filter_file.json
+
+echo ${input_dataset}
+
+python run.py --input-datasets ${input_dataset} \
+              --output-location ${output_location} \
+              --analysis-level participant \
+              --participant-label pilot001 \
+              --action skullstrip \
+              --bids-filter-file ${filter_file}
+```

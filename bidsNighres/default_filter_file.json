@@ -1,0 +1,15 @@
+{
+    "UNIT1": {
+        "datatype": "anat",
+        "suffix": "UNIT1"
+    },
+    "T1map": {
+        "datatype": "anat",
+        "suffix": "T1map"
+    },
+    "inv2": {
+        "datatype": "anat",
+        "inv": 2,
+        "suffix": "MP2RAGE"
+    }
+}
