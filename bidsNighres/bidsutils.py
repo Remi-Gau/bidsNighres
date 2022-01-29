@@ -135,6 +135,26 @@ def bidsify_skullstrip_output(
     return skullstrip_output
 
 
+# Returns:
+
+# Dictionary collecting outputs under the following keys (suffix of output files in brackets)
+
+#  outputs = ["segmentation", "labels", "memberships", "distance"]
+#
+#     "segmentation" (niimg): Hard brain segmentation with topological constraints (if chosen)
+#                          (_mgdm_seg)
+#     "labels" (niimg):      Maximum tissue probability labels
+#                          (_mgdm_lbls)
+#     "memberships" (niimg): Maximum tissue probability values,
+#                          4D image where the first dimension shows each voxel’s highest
+#                          probability to belong to a specific tissue,
+#                          the second dimension shows the second highest probability to
+#                          belong to another tissue etc.
+#                         (_mgdm_mems)
+#     "distance" (niimg):   Minimum distance to a segmentation boundary
+#                         (_mgdm_dist)
+
+
 def create_bidsname(layout, filename, filetype: str) -> str:
     # filename is path or entities dict
 

@@ -21,17 +21,18 @@ def skullstrip(layout_in, layout_out, this_participant, bids_filter: dict):
         **bids_filter["UNIT1"],
     )
 
-    sub_entity = "sub-" + this_participant
-    ses_entity = "ses-" + "001"
-
     for bf in unit1_files:
 
         entities = bf.get_entities()
 
+        # TODO make output path generation more flexible
+        sub_entity = "sub-" + this_participant
+        ses_entity = "ses-" + "001"
+        output_dir = join(layout_out.root, sub_entity, ses_entity, "anat")
+
+        # TODO find a way to match the entities between files
         # use filter file to select only lores
         entities["acquisition"] = "lores"
-
-        output_dir = join(layout_out.root, sub_entity, ses_entity, "anat")
 
         UNIT1 = layout_in.get(
             return_type="filename",
@@ -65,7 +66,7 @@ def skullstrip(layout_in, layout_out, this_participant, bids_filter: dict):
             t1_weighted=UNIT1[0],
             t1_map=T1map[0],
             save_data=True,
-            file_name=sub_entity + "_" + ses_entity + "_desc-",
+            file_name=sub_entity + "_" + ses_entity,
             output_dir=output_dir,
         )
 
@@ -85,12 +86,40 @@ def skullstrip(layout_in, layout_out, this_participant, bids_filter: dict):
         # with open('my_output_file.json', 'w') as ff:
         #     json.dump(data, ff)
 
-    # mgdm_results = nighres.brain.mgdm_segmentation(
-    #     contrast_image1=skullstripping_results["t1w_masked"],
-    #     contrast_type1="Mp2rage7T",
-    #     contrast_image2=skullstripping_results["t1map_masked"],
-    #     contrast_type2="T1map7T",
-    #     save_data=True,
-    #     file_name="sub-pilot001_ses-001_acq-" + up + res,
-    #     output_dir=os.path.join(subj_dir, up + res),
-    # )
+
+def segment(layout_out, this_participant, bids_filter: dict):
+
+    print(f"Processing: {this_participant}")
+
+    # TODO make output path generation more flexible
+    sub_entity = "sub-" + this_participant
+    ses_entity = "ses-" + "001"
+    output_dir = join(layout_out.root, sub_entity, ses_entity, "anat")
+
+    skullstripped_UNIT1 = layout_out.get(
+        return_type="filename",
+        subject=this_participant,
+        desc=["skullstripped"],
+        suffix=bids_filter["UNIT1"]["suffix"],
+        regex_search=True,
+    )
+    print(skullstripped_UNIT1)
+
+    skullstripped_T1map = layout_out.get(
+        return_type="filename",
+        subject=this_participant,
+        desc=["skullstripped"],
+        suffix=bids_filter["T1map"]["suffix"],
+        regex_search=True,
+    )
+    print(skullstripped_T1map)
+
+    mgdm_output = nighres.brain.mgdm_segmentation(
+        contrast_image1=skullstripped_T1map[0],
+        contrast_type1="Mp2rage7T",
+        contrast_image2=skullstripped_UNIT1[0],
+        contrast_type2="T1map7T",
+        save_data=True,
+        file_name=sub_entity + "_" + ses_entity,
+        output_dir=output_dir,
+    )
