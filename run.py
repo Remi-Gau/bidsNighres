@@ -66,7 +66,8 @@ def run(command, env={}):
             Multiple participant level analyses can be run independently
             (in parallel) using the same output-location.
             """,
-    type=click.Choice(["participant", "group"], case_sensitive=True),
+    default="subject",
+    type=click.Choice(["subject", "group"], case_sensitive=True),
     required=True,
 )
 @click.option(
