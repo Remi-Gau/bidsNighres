@@ -11,12 +11,16 @@ from .utils import create_dir_if_absent
 from .utils import move_file
 
 
-def get_dataset_layout(dataset_path: str):
+def get_dataset_layout(dataset_path: str, config={}):
 
     create_dir_if_absent(dataset_path)
 
-    layout = BIDSLayout(dataset_path, validate=False, derivatives=False)
-    return layout
+    if config == {}:
+        pybids_config = get_pybids_config()
+
+    return BIDSLayout(
+        dataset_path, validate=False, derivatives=False, config=pybids_config
+    )
 
 
 def write_dataset_description(layout):
