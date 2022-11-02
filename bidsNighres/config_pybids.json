@@ -36,7 +36,6 @@
             "name": "stain",
             "pattern": "[_/\\\\]+stain-([a-zA-Z0-9]+)"
         },
-
         {
             "name": "reconstruction",
             "pattern": "[_/\\\\]+rec-([a-zA-Z0-9]+)"
@@ -95,6 +94,10 @@
             "pattern": "[_/\\\\]+chunk-([0-9]+)"
         },
         {
+            "name": "description",
+            "pattern": "[_/\\\\]+desc-([a-zA-Z0-9]+)"
+        },
+        {
             "name": "suffix",
             "pattern": "[._]*([a-zA-Z0-9]*?)\\.[^/\\\\]+$"
         },
@@ -112,6 +115,7 @@
         }
     ],
     "default_path_patterns": [
+        "sub-{subject}[/ses-{session}]/{datatype<anat>|anat}/sub-{subject}[_ses-{session}][_acq-{acquisition}][_ce-{ceagent}][_rec-{reconstruction}][_inv-{inv}][_part-{part}][_desc-{desc}]_{suffix}{extension}",
         "sub-{subject}[/ses-{session}]/{datatype<anat>|anat}/sub-{subject}[_ses-{session}][_acq-{acquisition}][_ce-{ceagent}][_rec-{reconstruction}][_part-{part}]_{suffix<T1w|T2w|T1rho|T1map|T2map|T2star|FLAIR|FLASH|PDmap|PD|PDT2|inplaneT[12]|angio>}{extension<.nii|.nii.gz|.json>|.nii.gz}",
         "sub-{subject}[/ses-{session}]/{datatype<anat>|anat}/sub-{subject}[_ses-{session}][_acq-{acquisition}][_ce-{ceagent}][_rec-{reconstruction}][_mod-{modality}]_{suffix<defacemask>}{extension<.nii|.nii.gz|.json>|.nii.gz}",
         "sub-{subject}[/ses-{session}]/{datatype<func>|func}/sub-{subject}[_ses-{session}]_task-{task}[_acq-{acquisition}][_ce-{ceagent}][_dir-{direction}][_rec-{reconstruction}][_run-{run}][_echo-{echo}][_part-{part}]_{suffix<bold|cbv|sbref>}{extension<.nii|.nii.gz|.json>|.nii.gz}",
