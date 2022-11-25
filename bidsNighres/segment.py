@@ -26,7 +26,7 @@ def skullstrip(layout_in, layout_out, this_participant, bids_filter: dict):
         entities = bf.get_entities()
 
         # TODO make output path generation more flexible
-        sub_entity = "sub-" + this_participant
+        sub_entity = f"sub-{this_participant}"
         ses_entity = "ses-" + "001"
         output_dir = join(layout_out.root, sub_entity, ses_entity, "anat")
 
@@ -66,9 +66,10 @@ def skullstrip(layout_in, layout_out, this_participant, bids_filter: dict):
             t1_weighted=UNIT1[0],
             t1_map=T1map[0],
             save_data=True,
-            file_name=sub_entity + "_" + ses_entity,
+            file_name=f"{sub_entity}_{ses_entity}",
             output_dir=output_dir,
         )
+
 
         bidsify_skullstrip_output(
             skullstrip_output,
@@ -92,7 +93,7 @@ def segment(layout_out, this_participant, bids_filter: dict, dry_run: False):
     print(f"Processing: {this_participant}")
 
     # TODO make output path generation more flexible
-    sub_entity = "sub-" + this_participant
+    sub_entity = f"sub-{this_participant}"
     ses_entity = "ses-" + "001"
     output_dir = join(layout_out.root, sub_entity, ses_entity, "anat")
 
@@ -123,6 +124,6 @@ def segment(layout_out, this_participant, bids_filter: dict, dry_run: False):
             contrast_image2=skullstripped_UNIT1[0],
             contrast_type2="T1map7T",
             save_data=True,
-            file_name=sub_entity + "_" + ses_entity,
+            file_name=f"{sub_entity}_{ses_entity}",
             output_dir=output_dir,
         )
