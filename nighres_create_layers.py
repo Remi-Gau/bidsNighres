@@ -17,17 +17,17 @@ up = ""
 
 RES = ["075", "069"]
 
+# extract left cerebrum
+
+ROIS = ["right_cerebrum", "left_cerebrum"]
+LABELS = ["RightCerebrum", "LeftCerebrum"]
+
 for res in RES:
 
     segmentation = os.path.join(subj_dir, res, filename + res + "_mgdm-seg.nii.gz")
     boundary_dist = os.path.join(subj_dir, res, filename + res + "_mgdm-dist.nii.gz")
     max_labels = os.path.join(subj_dir, res, filename + res + "_mgdm-lbls.nii.gz")
     max_probas = os.path.join(subj_dir, res, filename + res + "_mgdm-mems.nii.gz")
-
-    # extract left cerebrum
-
-    ROIS = ["right_cerebrum", "left_cerebrum"]
-    LABELS = ["RightCerebrum", "LeftCerebrum"]
 
     for i, roi in enumerate(ROIS):
 
@@ -61,5 +61,5 @@ for res in RES:
             n_layers=n_layers,
             save_data=True,
             file_name=output_filename,
-            output_dir=os.path.join(subj_dir, res, "nbLayers-" + str(n_layers)),
+            output_dir=os.path.join(subj_dir, res, f"nbLayers-{n_layers}"),
         )
