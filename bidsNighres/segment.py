@@ -70,7 +70,6 @@ def skullstrip(layout_in, layout_out, this_participant, bids_filter: dict):
             output_dir=output_dir,
         )
 
-
         bidsify_skullstrip_output(
             skullstrip_output,
             layout_in=layout_in,
