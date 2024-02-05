@@ -1,26 +1,33 @@
+---
 # See https://pre-commit.com for more information
 # See https://pre-commit.com/hooks.html for more hooks
 repos:
-  - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.3.0pre-commit.ci] pre-commit autoupdate)
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
     hooks:
-      - id: trailing-whitespace
-      - id: check-yaml
-      - id: check-added-large-files
-      - id: end-of-file-fixer
+    -   id: trailing-whitespace
+    -   id: check-yaml
+    -   id: check-added-large-files
+    -   id: end-of-file-fixer
 
-  - repo: https://github.com/psf/black
+-   repo: https://github.com/psf/black
 
-    rev: 22.10.0[pre-commit.ci] pre-commit autoupdate)
+    rev: 24.1.1
     hooks:
-      - id: black
+    -   id: black
 
-  - repo: https://github.com/ikamensh/flynt/
-    rev: "0.76"
+-   repo: https://github.com/ikamensh/flynt/
+    rev: 1.0.1
     hooks:
-      - id: flynt
+    -   id: flynt
 
-  - repo: https://github.com/asottile/reorder_python_imports
-    rev: v3.9.0
+-   repo: https://github.com/asottile/reorder_python_imports
+    rev: v3.12.0
     hooks:
-      - id: reorder-python-imports
+    -   id: reorder-python-imports
+
+-   repo: https://github.com/jumanjihouse/pre-commit-hook-yamlfmt
+    rev: 0.2.3
+    hooks:
+    -   id: yamlfmt
+        args: [--mapping, '4', --sequence, '4', --offset, '0']
