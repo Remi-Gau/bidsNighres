@@ -17,12 +17,12 @@ repos:
     -   id: black
 
 -   repo: https://github.com/ikamensh/flynt/
-    rev: 1.0.1
+    rev: 1.0.4
     hooks:
     -   id: flynt
 
 -   repo: https://github.com/asottile/reorder-python-imports
-    rev: v3.14.0
+    rev: v3.15.0
     hooks:
     -   id: reorder-python-imports
 
